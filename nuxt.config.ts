@@ -1,6 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', '@hypernym/nuxt-gsap', '@vueuse/nuxt'],
   ssr: false,
+  spaLoadingTemplate: './app/spa-loading-template.html',
+  tailwindcss: {
+    cssPath: '@/assets/css/tailwind.css',
+    injectPosition: 'first',
+    viewer: false,
+  },
   app: {
     head: {
       htmlAttrs: { lang: 'ru' },
@@ -15,10 +22,21 @@ export default defineNuxtConfig({
         { rel: 'shortcut icon', href: '/favicon/favicon.ico' },
       ],
       meta: [
+        { name: 'description', content: 'Web application for convenient game of Monopoly.' },
         { name: 'msapplication-TileColor', content: '#0f1215' },
         { name: 'msapplication-config', content: '/favicon/browserconfig.xml' },
         { name: 'theme-color', content: '#0f1215' },
       ],
+    },
+  },
+  imports: {
+    dirs: ['stores', 'composables'],
+  },
+  vite: {
+    build: {
+      rollupOptions: {
+        external: 'NonExistingPath',
+      },
     },
   },
 })

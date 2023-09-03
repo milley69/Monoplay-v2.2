@@ -1,63 +1,40 @@
-# Nuxt 3 Minimal Starter
+![Logo](public/favicon/mstile-70x70.png)
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+[![host](https://img.shields.io/badge/monoplay.app-0F1215?style=for-the-badge&logo=ko-fi&logoColor=white&color=0F1215)](https://monoplay.vercel.app/)
 
-## Setup
+## Run Locally
 
-Make sure to install the dependencies:
-
-```bash
-# npm
-npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+Go to the project directory and install dependencies
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
+  cd monoplay-v2.2
+  npm install
 ```
 
-## Production
-
-Build the application for production:
+Start the server
 
 ```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
+  npm run dev
 ```
 
-Locally preview production build:
+## Environment Variables
 
-```bash
-# npm
-npm run preview
+To run this project, you will need to add the following environment variables to your .env file
 
-# pnpm
-pnpm run preview
+### Firebase
 
-# yarn
-yarn preview
-```
+`VITE_APIKEY`
+`VITE_AUTHDOMAIN`
+`VITE_DATABASEURL`
+`VITE_PROJECTID`
+`VITE_STORAGEBUCKET`
+`VITE_MESSAGINGSENDERID`
+`VITE_APPID`
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+## License
+
+[MIT](./blob/main/LICENSE)
+
+## Author
+
+- [@milley](https://www.github.com/milley69)
