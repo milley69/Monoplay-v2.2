@@ -1,0 +1,36 @@
+{
+  "name": "monoplay",
+  "version": "2.2.0",
+  "description": "Web application for convenient game of Monopoly.",
+  "overrides": {
+    "vue": "latest"
+  },
+  "scripts": {
+    "dev": "nuxt dev --host",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "devDependencies": {
+    "@hypernym/nuxt-gsap": "^2.2.2",
+    "@nuxtjs/tailwindcss": "^6.8.0",
+    "@pinia/nuxt": "^0.4.11",
+    "@types/copy-paste": "^1.1.30",
+    "@vueuse/core": "^10.4.0",
+    "@vueuse/nuxt": "^10.4.0",
+    "daisyui": "^3.6.3",
+    "nuxt": "^3.7.0",
+    "pinia": "^2.1.6"
+  },
+  "dependencies": {
+    "firebase": "^10.3.0",
+    "valibot": "^0.13.1"
+  },
+  "keywords": [
+    "monoplay",
+    "monopoly"
+  ],
+  "author": "Alexandr Lyadov<milleyStorm@gmail.com>",
+  "license": "MIT"
+}
