@@ -22,8 +22,10 @@ export const useUser = defineStore('UserPinia', {
       this.authStatus = status
     },
     setUser(user: User) {
+      const { setRoom } = useRoom()
       this.user = user
       this.uid = user.uid
+      if (user.room) setRoom(user.room)
       this.setStatus('authenticated')
     },
     removeUser() {

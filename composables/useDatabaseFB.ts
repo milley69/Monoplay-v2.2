@@ -1,10 +1,12 @@
+import { IRent } from '@/types'
 import { User } from 'firebase/auth'
-import { get, set } from 'firebase/database'
-import { storeToRefs } from 'pinia'
+import { child, get, set, update } from 'firebase/database'
+// import { storeToRefs } from 'pinia'
 
 export const useDatabaseFB = () => {
   const { $ref } = useNuxtApp()
-  const { user } = storeToRefs(useUser())
+  const { setToast } = useToast()
+  // const { user } = storeToRefs(useUser())
 
   const setNewUserDatabase = async (user: User, name: string) => {
     const data = {
@@ -25,11 +27,60 @@ export const useDatabaseFB = () => {
       const data = (await get($ref(`users/${uid}`))).val()
       if (data) return data
     } catch (error) {
-      // setToast('error', 'Ошибка', 'Не удалось получить пользователя!')
+      setToast('error', 'Ошибка', 'Не удалось получить пользователя!')
+      console.log('error: ', error)
+      return null
+    }
+  }
+  const getGamersFromDatabase = async (room: number) => {
+    try {
+      const data = (await get($ref(`games/${room}/gamers`))).val()
+      if (data) return data
+    } catch (error) {
+      setToast('error', 'Ошибка', 'Не удалось получить пользователя!')
+      console.log('error: ', error)
+      return null
+    }
+  }
+  const getSmthByPath = async (room: number, path: string): Promise<any | null> => {
+    try {
+      const smth = (await get(child($ref(), `games/${room}/${path}`))).val()
+      if (smth) return smth
+    } catch (error) {
       console.log('error: ', error)
       return null
     }
   }
 
-  return { setNewUserDatabase, getUserFromDatabase }
+  const checkStreetLengthByPath = async (room: number, path: string): Promise<number> => {
+    try {
+      const data = (await get(child($ref(), `games/${room}/board/streets/${path}`))).val()
+      if (data) return data.length
+      return 0
+    } catch (error) {
+      setToast('error', 'Ошибка', 'Количество улицы не получены!')
+      console.log('error: ', error)
+      return 0
+    }
+  }
+
+  const foldOtherRent = async (room: number, data: any, path: string, isBankrupt = false) => {
+    const { rent } = data
+    for await (const [key, value] of Object.entries(rent) as [string, IRent][]) {
+      if (isBankrupt) await update($ref(`games/${room}/board/${path}/rent/1empty`), { bought: false })
+      if (key === '1empty') continue
+      if (value.bought) {
+        await update($ref(`games/${room}/board/${path}/rent/${key}/`), { bought: false })
+      }
+    }
+  }
+
+  return {
+    setNewUserDatabase,
+    getUserFromDatabase,
+    getSmthByPath,
+    checkStreetLengthByPath,
+    foldOtherRent,
+    getGamersFromDatabase,
+  }
 }

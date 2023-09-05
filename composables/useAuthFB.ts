@@ -40,7 +40,12 @@ export const useAuthFB = () => {
 
   const changeUserData = async ({ name, useRofls }: { name: string; useRofls: boolean }) => {
     const { uid } = useUser()
-    await update($ref(`users/${uid}/`), { name, useRofls })
+    try {
+      await update($ref(`users/${uid}/`), { name, useRofls })
+      return true
+    } catch (error) {
+      return false
+    }
   }
 
   const initUser = async () => {

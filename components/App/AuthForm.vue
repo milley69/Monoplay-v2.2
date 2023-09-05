@@ -108,13 +108,19 @@ const signInHandler = async () => {
   const data = useAuthValidator({ email: userForm.email, password: userForm.password }, 'signIn')
   if (!data) return
   const res = await signIn({ email: userForm.email, password: userForm.password, name: userForm.name })
-  if (res) push('/main')
+  if (res) {
+    push('/main')
+    // localStorage.setItem('monoplay_user', JSON.stringify(user.value))
+  }
 }
 const signUpHandler = async () => {
   const data = useAuthValidator({ email: userForm.email, password: userForm.password, name: userForm.name }, 'signUp')
   if (!data) return
   const res = await signUp({ email: userForm.email, password: userForm.password, name: userForm.name })
-  if (res) push('/main')
+  if (res) {
+    push('/main')
+    // localStorage.setItem('monoplay_user', JSON.stringify(user.value))
+  }
 }
 
 const checkErrorPass = computed(() => {
