@@ -13,7 +13,7 @@
               class="btn btn-ghost btn-sm text-left mt-4 capitalize block"
               :class="{
                 'btn-disabled': street.isPledged,
-                'pointer-events-auto': street.owner === uid,
+                'pointer-events-auto': street.owner === userUid,
               }"
               v-for="(street, idx) in getStreetsByUid(uid)"
               @click="setModal(street, street.path, 'street')"
@@ -37,7 +37,7 @@
           <div>
             <button
               class="btn btn-ghost btn-sm text-left mt-4 capitalize block"
-              :class="{ 'btn-disabled': railroad.isPledged, 'pointer-events-auto': railroad.owner === uid }"
+              :class="{ 'btn-disabled': railroad.isPledged, 'pointer-events-auto': railroad.owner === userUid }"
               v-for="(railroad, idx) in getRailroadsByUid(uid)"
               @click="setModal(railroad, idx.toString(), 'railroad', getOwnedUnpledgedCount(uid, true))"
               :key="idx"
@@ -55,7 +55,7 @@
           <div>
             <button
               class="btn btn-ghost btn-sm text-left mt-4 capitalize block"
-              :class="{ 'btn-disabled': company.isPledged, 'pointer-events-auto': company.owner === uid }"
+              :class="{ 'btn-disabled': company.isPledged, 'pointer-events-auto': company.owner === userUid }"
               v-for="(company, idx) in getCompaniesByUid(uid)"
               @click="setModal(company, idx.toString(), 'company', getOwnedUnpledgedCount(uid))"
               :key="idx"
@@ -76,7 +76,7 @@ import { storeToRefs } from 'pinia'
 defineProps<{ action: boolean; gamer: Gamer; uid: string }>()
 
 const { getRailroadsByUid, getCompaniesByUid, getOwnedUnpledgedCount, getStreetsByUid } = useBoard()
-const { uid } = storeToRefs(useUser())
+const { uid: userUid } = storeToRefs(useUser())
 const { setModal } = useModal()
 </script>
 

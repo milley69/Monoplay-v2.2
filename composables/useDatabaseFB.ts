@@ -1,11 +1,13 @@
 import { IRent } from '@/types'
 import { User } from 'firebase/auth'
 import { child, get, set, update } from 'firebase/database'
-// import { storeToRefs } from 'pinia'
+import { storeToRefs } from 'pinia'
 
 export const useDatabaseFB = () => {
   const { $ref } = useNuxtApp()
   const { setToast } = useToast()
+  const { room } = storeToRefs(useRoom())
+  const { setStreets, setRailroads, setCompanies } = useBoard()
   // const { user } = storeToRefs(useUser())
 
   const setNewUserDatabase = async (user: User, name: string) => {
@@ -42,9 +44,50 @@ export const useDatabaseFB = () => {
       return null
     }
   }
+
+  const getStreetFromDatabase = async (): Promise<any | null> => {
+    try {
+      const streets = (await get($ref(`games/${room.value}/board/streets`))).val()
+      if (streets) {
+        setStreets(streets)
+        return streets
+      }
+    } catch (error) {
+      setToast('error', 'Ошибка', 'Улицы не получены!')
+      console.log('error: ', error)
+      return null
+    }
+  }
+  const getRailroadsFromDatabase = async (): Promise<any | null> => {
+    try {
+      const railroads = (await get($ref(`games/${room.value}/board/railroads`))).val()
+      if (railroads) {
+        setRailroads(railroads)
+        return railroads
+      }
+    } catch (error) {
+      setToast('error', 'Ошибка', 'Железные дороги не получены!')
+      console.log('error: ', error)
+      return null
+    }
+  }
+  const getCompanyFromDatabase = async (): Promise<any | null> => {
+    try {
+      const companies = (await get($ref(`games/${room.value}/board/companies`))).val()
+      if (companies) {
+        setCompanies(companies)
+        return companies
+      }
+    } catch (error) {
+      setToast('error', 'Ошибка', 'Компании не получены!')
+      console.log('error: ', error)
+      return null
+    }
+  }
+
   const getSmthByPath = async (room: number, path: string): Promise<any | null> => {
     try {
-      const smth = (await get(child($ref(), `games/${room}/${path}`))).val()
+      const smth = (await get(child($ref(), `games/${room}/board/${path}`))).val()
       if (smth) return smth
     } catch (error) {
       console.log('error: ', error)
@@ -82,5 +125,8 @@ export const useDatabaseFB = () => {
     checkStreetLengthByPath,
     foldOtherRent,
     getGamersFromDatabase,
+    getStreetFromDatabase,
+    getRailroadsFromDatabase,
+    getCompanyFromDatabase,
   }
 }

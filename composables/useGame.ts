@@ -1,5 +1,5 @@
 import type { LossType } from '@/types'
-import { child, get, remove, set, update } from 'firebase/database'
+import { child, get, push, remove, set, update } from 'firebase/database'
 import { storeToRefs } from 'pinia'
 
 const extractSubstring = (str: string) => {
@@ -14,7 +14,7 @@ export const useGame = () => {
   const { user, uid } = storeToRefs(useUser())
   const { gamer } = storeToRefs(useGamers())
   const { getGamerById, setGamers } = useGamers()
-  const { checkSimilarStreets, getForRenovation, foldRent, setFullBoard } = useBoard()
+  const { checkSimilarStreets, getForRenovation, foldRent, setFullBoard, getConfirmationModal } = useBoard()
   const { room, title, admin } = storeToRefs(useRoom())
   const { setRoom, isValidRoom } = useRoom()
   const { setToast } = useToast()
@@ -123,7 +123,8 @@ export const useGame = () => {
 
     if (path.includes('streets')) {
       await update($ref(`games/${room.value}/board/${path}/rent/1empty/`), { bought: true })
-      checkSimilarStreets(path.replace('streets/', '').slice(0, -2))
+      const { isSimilar, pathKey } = checkSimilarStreets(path.replace('streets/', '').slice(0, -2))
+      await reloadBoughtColor(isSimilar, pathKey)
     }
     await onLoss(cost)
 
@@ -132,9 +133,14 @@ export const useGame = () => {
   }
 
   const resetBoard = async () => {
+    const { gamers } = useGamers()
     try {
       const game = await getCopyGame()
       if (!game) throw new Error('Копия игры не найдена')
+      Object.values(gamers).forEach(async (g) => {
+        await update($ref(`games/${room.value}/gamers/${g.uid}`), { money: 1500, isBankrupt: false })
+      })
+      await update($ref(`games/${room.value}/gamers/${uid.value}`), { money: 1500, isBankrupt: false })
       await update($ref(`games/${room.value}/board`), { ...game })
       await remove($ref(`games/${room.value}/dice`))
     } catch (error) {
@@ -149,7 +155,8 @@ export const useGame = () => {
       await update($ref(`games/${room.value}/board/${path}`), { isPledged: true })
       const res = await getSmthByPath(room.value, path)
       if (housePrice) {
-        checkSimilarStreets(path.replace('streets/', '').slice(0, -2))
+        const { isSimilar, pathKey } = checkSimilarStreets(path.replace('streets/', '').slice(0, -2))
+        await reloadBoughtColor(isSimilar, pathKey)
         const fold = foldRent(res.rent)
         foldOtherRent(room.value, res, path)
         await onEarning(housePrice * fold)
@@ -166,7 +173,8 @@ export const useGame = () => {
     if (!checkBalance(cost) || !room.value) return
     await update($ref(`games/${room.value}/board/${path}`), { isPledged: false })
     if (path.includes('streets')) {
-      checkSimilarStreets(path.replace('streets/', '').slice(0, -2))
+      const { isSimilar, pathKey } = checkSimilarStreets(path.replace('streets/', '').slice(0, -2))
+      await reloadBoughtColor(isSimilar, pathKey)
     }
     await onLoss(cost)
     const res = await getSmthByPath(room.value, path)
@@ -206,7 +214,8 @@ export const useGame = () => {
     if (cost !== 0) await onDeposit(money, id, cost * -1)
     await update($ref(`games/${room.value}/board/${path}`), { owner: id })
     if (path.includes('streets')) {
-      checkSimilarStreets(path.replace('streets/', '').slice(0, -2))
+      const { isSimilar, pathKey } = checkSimilarStreets(path.replace('streets/', '').slice(0, -2))
+      await reloadBoughtColor(isSimilar, pathKey)
     }
 
     const res = await getSmthByPath(room.value, extractSubstring(path))
@@ -215,9 +224,10 @@ export const useGame = () => {
   }
 
   const onBankrupt = async (uid: string) => {
+    console.log('hello')
     const { getStreetsByUid, getRailroadsByUid, getCompaniesByUid } = useBoard()
     await update($ref(`games/${room.value}/gamers/${uid}`), { money: 0, isBankrupt: true })
-    // await dice.removeDice()
+    await dice.removeDice()
     const streets = getStreetsByUid(uid)
     const railroads = getRailroadsByUid(uid)
     const companies = getCompaniesByUid(uid)
@@ -238,6 +248,41 @@ export const useGame = () => {
       })
     }
     setToast('info', 'Новое сообщение 💸', 'Мы сожалеем, что вам пришлось обанкротиться!', 5500)
+  }
+
+  /* Confirmation */
+
+  const getConfirmation = async () => {
+    try {
+      const confirmation = (await get(child($ref(), `games/${room.value}/board/confirmation`))).val()
+      if (confirmation) {
+        getConfirmationModal(confirmation)
+      }
+    } catch (error) {
+      console.log('error: ', error)
+    }
+  }
+
+  const setConfirmation = async (idFor: string, cost: number, name: string, path: string) => {
+    try {
+      await push($ref(`games/${room.value}/board/confirmation`), {
+        for: idFor,
+        by: uid.value,
+        cost,
+        name,
+        path,
+        check: false,
+      })
+    } catch (error) {
+      console.log('error: ', error)
+    }
+  }
+  const removeConfirmation = async (id: string) => {
+    try {
+      await remove($ref(`games/${room.value}/board/confirmation/${id}`))
+    } catch (error) {
+      console.log('error: ', error)
+    }
   }
 
   // Dice
@@ -281,6 +326,7 @@ export const useGame = () => {
     createRoom,
     setNewGamer,
     loadRoom,
+    checkBalance,
     onDeposit,
     onEarning,
     onLoss,
@@ -294,6 +340,11 @@ export const useGame = () => {
     onSale,
     onOrder,
     onBankrupt,
+    /* Confirmation */
+    getConfirmation,
+    setConfirmation,
+    removeConfirmation,
+    /* Dice */
     addDiceDB,
     removeDiceDB,
     reloadDiceDB,

@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 const { buySmth } = useGame()
-const { uid } = useAuth()
+const { uid } = useUser()
 const { modal, closeModal } = useModal()
 
 const buyIt = (cost: number) => {

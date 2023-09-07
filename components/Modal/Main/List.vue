@@ -35,13 +35,13 @@
 </template>
 
 <script setup lang="ts">
-import { IRent, TypeM } from 'types'
+import { IRent, ModalType } from '@/types'
 const { onPurchase, onSale } = useGame()
 const { $translateIt } = useNuxtApp()
 const { modal, closeModal } = useModal()
 
 const props = withDefaults(
-  defineProps<{ type: TypeM; rents: any; quantityRent: number | string; purchase: boolean }>(),
+  defineProps<{ type?: ModalType; rents: any; quantityRent: number | string; purchase: boolean }>(),
   { purchase: false }
 )
 

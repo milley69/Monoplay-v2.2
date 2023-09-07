@@ -1,4 +1,7 @@
 <template>
+  <Teleport to="body">
+    <LazyModalConfirmation :gamer="gamer" @close="getExchange" v-if="actions.exchange" />
+  </Teleport>
   <div
     class="stat relative border-opacity-50"
     :class="{ 'pointer-events-none bg-neutral text-base-content': gamer.isBankrupt }"
@@ -19,9 +22,9 @@
           type="button"
           class="btn btn-sm btn-warning"
           :class="{ 'btn-disabled': gamer.isBankrupt }"
-          @click="getPay"
+          @click="getExchange"
         >
-          Заплатить
+          Обмен
         </button>
       </div>
       <!--  -->
@@ -44,7 +47,7 @@
           </button>
         </div>
       </div>
-      <profile-data-stat :gamer="gamer" :action="actions.pay" :uid="uid" />
+      <LazyGamerDataStat :gamer="gamer" :action="actions.pay" :uid="uid" />
     </div>
     <lazy-dice :uidprop="uid" />
   </div>
@@ -61,6 +64,7 @@ const emit = defineEmits<(event: 'deposit', money: number, uid: string, deposit:
 const actions = reactive({
   transaction: false,
   pay: false,
+  exchange: false,
 })
 
 const getTransaction = () => {
@@ -70,6 +74,10 @@ const getTransaction = () => {
 const getPay = () => {
   actions.transaction = false
   actions.pay = !actions.pay
+}
+
+const getExchange = () => {
+  actions.exchange = !actions.exchange
 }
 
 const deposit = ref(<string>'')

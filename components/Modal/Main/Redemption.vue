@@ -12,7 +12,7 @@
 <script setup lang="ts">
 const { redemptionSmth } = useGame()
 const { modal, closeModal } = useModal()
-const { uid } = useAuth()
+const { uid } = useUser()
 
 const redemptionIt = () => {
   if (!modal.path) return

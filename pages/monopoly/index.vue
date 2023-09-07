@@ -57,15 +57,15 @@
             </button>
           </div>
         </div>
-        <lazy-gamer-data-stat v-if="gamer" :gamer="gamer" :action="actions.myPanel" :uid="uid" />
+        <LazyGamerDataStat v-if="gamer" :gamer="gamer" :action="actions.myPanel" :uid="uid" />
         <lazy-dice :uidprop="uid" />
       </div>
-      <lazy-gamer-stat-gamer
-        v-for="(gamer, uid) in gamers"
-        :key="uid"
+      <LazyGamerStatGamer
+        v-for="gamer in gamers"
+        :key="gamer.uid"
         :gamer="gamer"
         :balance="getCurrencyBalance(gamer.money)"
-        :uid="uid.toString()"
+        :uid="gamer.uid"
         @deposit="depositHandler"
       />
     </div>

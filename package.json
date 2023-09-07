@@ -6,9 +6,11 @@
     "vue": "latest"
   },
   "scripts": {
-    "dev": "nuxt dev --host",
+    "dev:host": "nuxt dev --host",
+    "dev": "nuxt dev",
     "build": "nuxt build",
     "generate": "nuxt generate",
+    "deploy": "nuxt generate && firebase deploy",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },

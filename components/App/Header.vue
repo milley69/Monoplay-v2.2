@@ -5,7 +5,7 @@
       <div class="navbar w-screen bg-base-100/50 backdrop-blur-[10px]">
         <div class="navbar-start">
           <div class="flex-none">
-            <label for="my-drawer" ref="headerLabel" class="btn btn-square btn-ghost drawer-button ml-2">
+            <label for="my-drawer" ref="drawerLabel" class="btn btn-square btn-ghost drawer-button ml-2">
               <i class="bx bx-menu bx-fw bx-sm pt-px"></i>
             </label>
           </div>
@@ -17,7 +17,7 @@
           <p class="flex items-center gap-1">
             <i class="bx bx-won bx-flip-vertical"></i>{{ getCurrencyBalance(gamer?.money) }}
           </p>
-          <Dice :uidprop="gamer.uid" is-navbar v-if="gamer.uid" />
+          <LazyDice :uidprop="gamer.uid" is-navbar v-if="gamer.uid" />
         </div>
       </div>
     </div>
@@ -29,27 +29,47 @@
         <li class="mx-auto font-medium">
           <div class="indicator" v-if="!isMain">
             <span class="indicator-item badge badge-primary">{{ '0' }}</span>
-            <button class="btn btn-ghost px-2">
+            <button class="btn btn-ghost px-2" @click="toConfirmation">
               {{ user?.name }}
             </button>
           </div>
-          <button class="btn btn-ghost px-2" v-else @click="toConfirmation">
+          <button class="btn btn-ghost px-2" v-else>
             {{ user?.name }}
           </button>
         </li>
-        <li class="mx-auto flex flex-col gap-4">
-          <button type="button" class="btn btn-ghost" :disabled="!isYourDice" v-if="!isMain" @click="bankrupt">
-            Обанкротиться
-          </button>
-          <button type="button" class="btn btn-ghost" @click="resetBoard" v-show="isAdmin || !isMain">Сбросить</button>
-          <button type="button" class="btn btn-ghost translate-x-2 pr-3" v-if="!isMain" @click="router.push('/main')">
-            На главную
-            <i class="bx bx-food-menu bx-fw"></i>
-          </button>
-          <button type="button" class="btn btn-ghost translate-x-2 pr-3" @click="signOut">
-            Выйти
-            <i class="bx bx-log-out bx-fw"></i>
-          </button>
+        <li class="w-full">
+          <ul class="menu rounded-box" v-if="!isMain">
+            <div v-if="isAdmin">
+              <li class="menu-title">Админ</li>
+              <li class="mt-1 mb-3">
+                <span>Закрыть комнату <i class="bx bx-lock-alt bx-fw"></i></span>
+              </li>
+              <li @click="resetBoard">
+                <span>Сбросить<i class="bx bx-reset bx-fw"></i></span>
+              </li>
+              <li><div class="divider"></div></li>
+            </div>
+            <li :class="{ disabled: !isYourDice }" @click="bankrupt">
+              <span>Обанкротиться<i class="bx bx-ghost bx-fw"></i></span>
+            </li>
+            <li><div class="divider"></div></li>
+            <li @click="router.push('/main')">
+              <span>На главную <i class="bx bx-food-menu bx-fw"></i></span>
+            </li>
+            <li><div class="divider"></div></li>
+            <li :class="{ disabled: isAdmin }" @click="leave">
+              <span>Покинуть комнату<i class="bx bx-run bx-fw"></i></span>
+            </li>
+            <li><div class="divider"></div></li>
+            <li @click="signOut">
+              <span>Выйти <i class="bx bx-log-out bx-fw"></i></span>
+            </li>
+          </ul>
+          <ul class="menu rounded-box" v-else>
+            <li @click="signOut">
+              <span>Выйти <i class="bx bx-log-out bx-fw"></i></span>
+            </li>
+          </ul>
         </li>
       </ul>
     </div>
@@ -64,6 +84,7 @@ const router = useRouter()
 const route = useRoute()
 const { signOut } = useAuthFB()
 const { resetBoard, onBankrupt } = useGame()
+const { setToast } = useToast()
 
 const { gamer } = storeToRefs(useGamers())
 const { user } = storeToRefs(useUser())
@@ -97,4 +118,12 @@ const whatIsPage = computed(() => {
   if (route.path.includes('/monopoly')) return title.value
   return null
 })
+
+const leave = () => {
+  if (isAdmin.value) {
+    setToast('error', 'Ой... 🐱', 'Вы не можете покинуть свою группу!', 4000)
+    return
+  }
+  console.log('oks')
+}
 </script>

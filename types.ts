@@ -41,47 +41,34 @@ export interface IRent {
   count: number
 }
 
-export interface IStreets {
-  housePrice: number
+interface Property {
   isPledged: boolean
   name: string
   owner?: string
+  path: string
   pledge: number
   price: number
   redemption: number
+}
+
+export interface IStreets extends Property {
+  housePrice: number
   rent: Record<string, IRent>[]
   color: string
-  path: string
 }
-export interface Irailroads {
-  isPledged: boolean
-  name: string
-  path: string
-  owner?: string
-  pledge: number
-  price: number
-  redemption: number
+export interface Irailroads extends Property {
   rent: [number, number, number, number]
 }
-export interface Icompanies {
-  isPledged: boolean
-  name: string
-  path: string
-  owner?: string
-  pledge: number
-  price: number
-  redemption: number
+export interface Icompanies extends Property {
   rent: [string, string]
 }
 export interface IConfirm {
   by: string
-  for: string
-  cost: number
-  name: any
-  // path: PathDatabase
-  path: string
-  somePath: string
   check: boolean
+  cost: number
+  for: string
+  name: any
+  path: string
   id: string
 }
 
@@ -94,3 +81,12 @@ export interface Modal {
   count?: number
 }
 export type ModalType = 'railroad' | 'company' | 'street'
+
+/* Confirmation */
+
+export interface PropertyConfirmation {
+  giving: string
+  street: IStreets[]
+  railroad: Irailroads[]
+  company: Icompanies[]
+}

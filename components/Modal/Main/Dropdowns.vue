@@ -1,3 +1,4 @@
+import { useBoard } from '../../../stores/board';
 <template>
   <div>
     <div class="dropdown -translate-y-2 z-10" :class="{ 'dropdown-open': companyV }">
@@ -35,12 +36,12 @@
 </template>
 
 <script setup lang="ts">
-const { setConfirmation } = useConfirmation()
-const { checkBalance } = useGame()
-const { modal, closeModal } = useModal()
-const { setToast } = useToast()
 const emit = defineEmits<{ pay: [cost: number] }>()
 const props = defineProps<{ companyV: boolean; orderV: boolean }>()
+
+const { checkBalance, setConfirmation } = useGame()
+const { modal, closeModal } = useModal()
+const { setToast } = useToast()
 
 const companyCount = ref('')
 const orderCount = ref('')

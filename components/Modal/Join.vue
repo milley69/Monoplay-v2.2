@@ -54,7 +54,6 @@ const submitHandler = async () => {
   }
   loader.value = true
   const data = await loadRoom(Number(form.key), true)
-  console.log('data: ', data)
   if (!data) {
     setToast('error', 'Ошибка! 🐸', 'Комнате не найдена!')
     loader.value = false

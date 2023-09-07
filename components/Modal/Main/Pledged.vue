@@ -7,7 +7,7 @@
 <script setup lang="ts">
 const { pledgedSmth } = useGame()
 const { modal, closeModal } = useModal()
-const { uid } = useAuth()
+const { uid } = useUser()
 
 const pledgedIt = () => {
   if (!modal.path) return

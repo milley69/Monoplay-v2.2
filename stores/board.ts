@@ -17,12 +17,20 @@ export const useBoard = defineStore('BoardPinia', {
   },
   actions: {
     setFullBoard(data: any) {
-      console.log('data: ', data)
       this.chance = data.chance
       this.companies = data.companies
       this.railroads = data.railroads
       this.streets = data.streets
       this.confirmation = data.confirmation
+    },
+    setStreets(data: Street) {
+      this.streets = data
+    },
+    setRailroads(data: Irailroads[]) {
+      this.railroads = data
+    },
+    setCompanies(data: Icompanies[]) {
+      this.companies = data
     },
     //
     getStreetsByUid(uid: string): IStreets[] {
@@ -79,6 +87,28 @@ export const useBoard = defineStore('BoardPinia', {
         return { isSimilar, pathKey }
       }
       return { isSimilar: false, pathKey }
+    },
+    //
+    getConfirmationModal(data: IConfirm[]) {
+      const { uid } = useUser()
+
+      for (const [id, value] of Object.entries(data)) {
+        const checkId = this.confirmation.find((i) => i.id === id)
+        if (value.for === uid && !checkId) this.confirmation.push({ ...value, id })
+      }
+    },
+    async deleteConfirmationModal(id: string, all: boolean = false) {
+      const { removeConfirmation } = useGame()
+      if (all) {
+        this.confirmation = []
+      } else {
+        this.confirmation.forEach((con) => {
+          if (con.id === id) {
+            con.check = true
+          }
+        })
+        await removeConfirmation(id)
+      }
     },
   },
 })
