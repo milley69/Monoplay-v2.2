@@ -7,6 +7,7 @@
       :class="{
         'btn-info': modal.type === 'street',
         'btn-disabled ': !rentColor,
+        'btn-disabled pointer-events-none': !isYourDice,
       }"
       @click="openPurchase"
     >
@@ -28,6 +29,8 @@
 </template>
 
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
+const { isYourDice } = storeToRefs(useDice())
 const { modal } = useModal()
 const emit = defineEmits(['purchase'])
 

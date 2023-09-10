@@ -27,7 +27,7 @@
     <div class="modal-box max-w-xs">
       <h3 class="text-lg font-bold">Поиск комнаты</h3>
       <div class="flex items-center justify-center my-12">
-        <LazyAppLoader />
+        <AppLoader />
       </div>
     </div>
     <div class="modal-backdrop backdrop-blur-[2px]"></div>

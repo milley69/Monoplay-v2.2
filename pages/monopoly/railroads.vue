@@ -10,7 +10,7 @@
         <div>
           <button
             class="btn btn-ghost btn-sm text-left mt-4 capitalize block"
-            :class="{ 'line-through italic text-neutral-content/30': railroad.owner }"
+            :class="{ 'italic text-neutral-content/70': railroad.owner }"
             v-for="(railroad, idx) in board.railroads"
             @click="setModal(railroad, idx.toString(), 'railroad', checkOwned(railroad))"
             :key="idx"

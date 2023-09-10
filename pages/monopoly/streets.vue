@@ -9,7 +9,7 @@
         <div v-for="(streetCity, idx) in street" :key="idx">
           <button
             class="btn btn-ghost btn-sm text-left mt-4 capitalize"
-            :class="{ 'line-through italic text-neutral-content/30': streetCity.owner }"
+            :class="{ 'italic text-neutral-content/70': streetCity.owner }"
             @click="setModal(streetCity, `${color}/${idx}`, 'street')"
           >
             {{ streetCity.name }}

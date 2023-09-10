@@ -11,7 +11,7 @@ export interface User {
   useRofls: boolean
   createAt: Date
   uid: string
-  room: number
+  room?: number
 }
 
 export type userForm = Record<'name' | 'email' | 'password', string>

@@ -6,6 +6,7 @@ export const useListener = () => {
   const { getGamersFromDatabase, getStreetFromDatabase, getRailroadsFromDatabase, getCompanyFromDatabase } =
     useDatabaseFB()
   const { setGamers } = useGamers()
+  const { setToast } = useToast()
   const { getDicesDB, getConfirmation } = useGame()
   const dice = useDice()
 
@@ -44,5 +45,21 @@ export const useListener = () => {
     if (snap.key === 'railroads') await getRailroadsFromDatabase()
     if (snap.key === 'companies') await getCompanyFromDatabase()
     // await getDicesDB()
+  })
+
+  onChildRemoved($ref(`games/${room.value}`), ({ key }) => {
+    if (key === 'id') {
+      const { deleteRoom } = useRoom()
+      setToast('info', 'Новое сообщение! 😢', 'Комната закрыта')
+      deleteRoom()
+      useRouter().push('/main')
+    }
+  })
+
+  /* UPDATE DEPLOY */
+  // FIXME: а?
+  onChildAdded($ref('updateCount'), (snap) => {
+    console.log('snap: ', snap)
+    setToast('info', 'Новое обновление! 😎', 'Вы можете обновить приложение, что бы изменения применились.')
   })
 }

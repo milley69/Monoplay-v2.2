@@ -37,7 +37,6 @@ const isNotPlay = computed(() => {
 })
 
 const playedHandler = () => {
-  // if (props.uidprop !== uid.value) return
   if (!dice.isYourDice) return
   dice.played()
 }

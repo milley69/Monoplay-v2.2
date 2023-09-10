@@ -3,13 +3,15 @@
     class="btn btn-sm btn-error join-item"
     type="button"
     @click="redemptionIt"
-    :class="{ 'btn-disabled': checkOn }"
+    :class="{ 'btn-disabled': checkOn, 'btn-disabled pointer-events-none': !isYourDice }"
   >
     Выкупить
   </button>
 </template>
 
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
+const { isYourDice } = storeToRefs(useDice())
 const { redemptionSmth } = useGame()
 const { modal, closeModal } = useModal()
 const { uid } = useUser()

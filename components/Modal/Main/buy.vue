@@ -16,6 +16,7 @@
         'btn-disabled ': modal.data.owner === uid,
         'btn-warning': modal.type === 'railroad',
         'btn-success': modal.type === 'company',
+        'btn-disabled pointer-events-none': !isYourDice,
       }"
       @click="buyIt(modal.data.price)"
     >
@@ -25,6 +26,8 @@
 </template>
 
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
+const { isYourDice } = storeToRefs(useDice())
 const { buySmth } = useGame()
 const { uid } = useUser()
 const { modal, closeModal } = useModal()

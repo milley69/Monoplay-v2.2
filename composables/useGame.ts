@@ -15,30 +15,44 @@ export const useGame = () => {
   const { gamer } = storeToRefs(useGamers())
   const { getGamerById, setGamers } = useGamers()
   const { checkSimilarStreets, getForRenovation, foldRent, setFullBoard, getConfirmationModal } = useBoard()
-  const { room, title, admin } = storeToRefs(useRoom())
+  const { room, title, admin, edition } = storeToRefs(useRoom())
   const { setRoom, isValidRoom } = useRoom()
   const { setToast } = useToast()
   const { getSmthByPath, foldOtherRent, checkStreetLengthByPath } = useDatabaseFB()
 
-  const getCopyGame = async () => {
-    const data = await get(child($ref(), `originalGame`))
+  const getCopyGame = async (edition: string | null) => {
+    if (!edition) return null
+    const data = await get(child($ref(), edition))
     if (data.exists()) return data.val()
     return null
   }
 
-  const createRoom = async (title: string) => {
+  const createRoom = async (title: string, edition: string) => {
     if (!user.value) return null
     const id = Math.floor(Number(new Date()) * Math.random())
     try {
-      const game = await getCopyGame()
+      const game = await getCopyGame(edition)
       if (!game) throw new Error('Копия игры не найдена')
-      await set($ref(`games/${id}`), { id, title, board: { ...game }, admin: user.value.uid })
+      await set($ref(`games/${id}`), { id, title, board: { ...game }, admin: user.value.uid, edition })
       await setNewGamer(id)
     } catch (error) {
       console.log('error: ', error)
       return null
     }
     return { id, title }
+  }
+
+  const deleteRoom = async () => {
+    const { gamers } = storeToRefs(useGamers())
+    try {
+      for await (const gamer of Object.values(gamers.value)) {
+        remove($ref(`users/${gamer.uid}/room`))
+      }
+      remove($ref(`users/${uid.value}/room`))
+      await remove($ref(`games/${room.value}`))
+    } catch (error) {
+      console.log('error: ', error)
+    }
   }
 
   const setNewGamer = async (room: number) => {
@@ -63,6 +77,7 @@ export const useGame = () => {
         setFullBoard(data.board)
         admin.value = data.admin
         title.value = data.title
+        edition.value = data.edition
         setGamers(data.gamers)
         return data.title
       }
@@ -100,12 +115,12 @@ export const useGame = () => {
   }
   const onLossRenovation = async (sum: { house: number; hotel: number }): Promise<void> => {
     if (!isValidRoom) return
-    const data = getForRenovation(uid.value)
-    await onLoss(data.house * sum.house + data.hotel * sum.hotel)
+    const { house, hotel } = getForRenovation(uid.value)
+    await onLoss(house * sum.house + hotel * sum.hotel)
     setToast(
       'success',
       'Благодарность 🎉',
-      `Вы заплатили за ремонт домов <${data.house * sum.house}> и за отели <${data.hotel * sum.hotel}>!`,
+      `Вы заплатили за ремонт домов <${house * sum.house}> и за отели <${hotel * sum.hotel}>!`,
       5500
     )
   }
@@ -135,7 +150,7 @@ export const useGame = () => {
   const resetBoard = async () => {
     const { gamers } = useGamers()
     try {
-      const game = await getCopyGame()
+      const game = await getCopyGame(edition.value)
       if (!game) throw new Error('Копия игры не найдена')
       Object.values(gamers).forEach(async (g) => {
         await update($ref(`games/${room.value}/gamers/${g.uid}`), { money: 1500, isBankrupt: false })
@@ -224,7 +239,6 @@ export const useGame = () => {
   }
 
   const onBankrupt = async (uid: string) => {
-    console.log('hello')
     const { getStreetsByUid, getRailroadsByUid, getCompaniesByUid } = useBoard()
     await update($ref(`games/${room.value}/gamers/${uid}`), { money: 0, isBankrupt: true })
     await dice.removeDice()
@@ -326,6 +340,7 @@ export const useGame = () => {
     createRoom,
     setNewGamer,
     loadRoom,
+    deleteRoom,
     checkBalance,
     onDeposit,
     onEarning,

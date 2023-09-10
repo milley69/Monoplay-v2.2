@@ -1,7 +1,7 @@
 <template>
   <input type="checkbox" :aria-label="'modal'" checked class="modal-toggle" />
   <div class="modal">
-    <div class="modal-box max-w-xs">
+    <div class="modal-box max-w-xs" v-if="true">
       <h3 class="text-lg font-bold">Обмен</h3>
       <div class="join w-full mt-2" @click="getSelf">
         <button class="join-item btn btn-ghost w-1/2">Вы</button>
@@ -49,6 +49,9 @@
       <div class="modal-action w-full">
         <button class="w-full btn btn-primary" @click="qwe">Продолжить</button>
       </div>
+    </div>
+    <div class="modal-box max-w-xs" v-else>
+      <p>Вы кто туда сюда</p>
     </div>
     <div class="modal-backdrop backdrop-blur-[2px]" @click="$emit('close')"></div>
   </div>

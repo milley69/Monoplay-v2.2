@@ -15,8 +15,8 @@
 </template>
 
 <script lang="ts" setup>
-const props = withDefaults(defineProps<{ isMain?: boolean }>(), { isMain: false })
-const isNavigate = computed(() => (props.isMain ? navigateMain : navigate))
+const { isMain } = withDefaults(defineProps<{ isMain?: boolean }>(), { isMain: false })
+const isNavigate = computed(() => (isMain ? navigateMain : navigate))
 
 const navigate = [
   { path: '/monopoly/', name: 'Профиль', iconClass: 'bxs-user pl-1' },

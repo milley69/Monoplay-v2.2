@@ -12,6 +12,7 @@
             <input
               type="text"
               id="formName"
+              placeholder="Название"
               v-model.trim="form.name"
               maxlength="12"
               required
@@ -20,6 +21,22 @@
             <span class="absolute right-3 opacity-80">{{ `${form.name.length}/12` }}</span>
           </div>
         </div>
+        <!--  -->
+        <!-- <label class="label">
+          <span class="label-text">Как назовем?</span>
+        </label>
+        <select class="select select-warning w-full max-w-xs" v-model="selected">
+          <option v-for="option in options" :key="option.value" :value="option.value">{{ option.text }}</option>
+        </select> -->
+        <div class="form-control w-full max-w-xs">
+          <label class="label">
+            <span class="label-text">Какое издание?</span>
+          </label>
+          <select class="select select-warning" v-model="form.selectedGame">
+            <option v-for="option in form.options" :key="option.value" :value="option.value">{{ option.text }}</option>
+          </select>
+        </div>
+        <!--  -->
 
         <button type="submit" class="btn btn-warning">Создать</button>
       </form>
@@ -30,7 +47,7 @@
     <div class="modal-box max-w-xs">
       <h3 class="text-lg font-bold">Создание комнаты</h3>
       <div class="flex items-center justify-center my-12">
-        <LazyAppLoader />
+        <AppLoader />
       </div>
     </div>
     <div class="modal-backdrop backdrop-blur-[2px]"></div>
@@ -47,11 +64,16 @@ const { createRoom } = useGame()
 const loader = ref(false)
 const form = reactive({
   name: '',
+  selectedGame: 'originalGame',
+  options: [
+    { text: 'Оригинальное', value: 'originalGame' },
+    { text: 'хз какое', value: 'originalGame' },
+  ],
 })
 
 const submitHandler = async () => {
   loader.value = true
-  const data = await createRoom(form.name)
+  const data = await createRoom(form.name, form.selectedGame)
   if (!data) {
     setToast('error', 'Очень жаль', `Комната <${form.name}> не создана!`)
     loader.value = false

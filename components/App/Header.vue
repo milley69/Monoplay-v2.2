@@ -1,4 +1,13 @@
 <template>
+  <Teleport to="body">
+    <LazyModalAgreement
+      :msg="isModalAgree.msg"
+      :is-open="isModalAgree.isOpen"
+      :type="isModalAgree.type"
+      :is-admin="isAdmin"
+      @close="removeModalAgree"
+    />
+  </Teleport>
   <div class="drawer">
     <input id="my-drawer" type="checkbox" class="drawer-toggle" />
     <div class="drawer-content fixed top-0 z-30">
@@ -41,15 +50,18 @@
           <ul class="menu rounded-box" v-if="!isMain">
             <div v-if="isAdmin">
               <li class="menu-title">Админ</li>
-              <li class="mt-1 mb-3">
+              <li class="mt-1 mb-3" @click="setModalAgree('Вы уверены, что хотите закрыть эту комнату?', 'delete')">
                 <span>Закрыть комнату <i class="bx bx-lock-alt bx-fw"></i></span>
               </li>
-              <li @click="resetBoard">
+              <li @click="setModalAgree('Вы уверены, что хотите сбросить эту комнату?', 'reset')">
                 <span>Сбросить<i class="bx bx-reset bx-fw"></i></span>
               </li>
               <li><div class="divider"></div></li>
             </div>
-            <li :class="{ disabled: !isYourDice }" @click="bankrupt">
+            <li
+              :class="{ 'disabled pointer-events-none': !(isYourDice && !gamer.isBankrupt) }"
+              @click="setModalAgree('Вы уверены, что нет другого выхода, кроме как стать банкротом?', 'bankrupt')"
+            >
               <span>Обанкротиться<i class="bx bx-ghost bx-fw"></i></span>
             </li>
             <li><div class="divider"></div></li>
@@ -57,7 +69,7 @@
               <span>На главную <i class="bx bx-food-menu bx-fw"></i></span>
             </li>
             <li><div class="divider"></div></li>
-            <li :class="{ disabled: isAdmin }" @click="leave">
+            <li @click="setModalAgree('Вы уверены, что хотите покинуть эту комнату?', 'leave')">
               <span>Покинуть комнату<i class="bx bx-run bx-fw"></i></span>
             </li>
             <li><div class="divider"></div></li>
@@ -83,8 +95,6 @@ withDefaults(defineProps<{ isMain?: boolean }>(), { isMain: false })
 const router = useRouter()
 const route = useRoute()
 const { signOut } = useAuthFB()
-const { resetBoard, onBankrupt } = useGame()
-const { setToast } = useToast()
 
 const { gamer } = storeToRefs(useGamers())
 const { user } = storeToRefs(useUser())
@@ -93,11 +103,17 @@ const { isYourDice } = storeToRefs(useDice())
 
 const drawerLabel = ref<HTMLElement | null>(null)
 
-const bankrupt = () => {
-  if (drawerLabel.value) {
-    drawerLabel.value.click()
-    onBankrupt(gamer.value.uid)
-  }
+const isModalAgree = ref({
+  isOpen: false,
+  msg: '',
+  type: <'delete' | 'leave' | 'reset' | 'bankrupt' | ''>'',
+})
+
+const setModalAgree = (msg: string, type: 'delete' | 'leave' | 'reset' | 'bankrupt') => {
+  isModalAgree.value = { isOpen: true, msg, type }
+}
+const removeModalAgree = () => {
+  isModalAgree.value = { isOpen: false, msg: '', type: '' }
 }
 
 const toConfirmation = () => {
@@ -118,12 +134,4 @@ const whatIsPage = computed(() => {
   if (route.path.includes('/monopoly')) return title.value
   return null
 })
-
-const leave = () => {
-  if (isAdmin.value) {
-    setToast('error', 'Ой... 🐱', 'Вы не можете покинуть свою группу!', 4000)
-    return
-  }
-  console.log('oks')
-}
 </script>

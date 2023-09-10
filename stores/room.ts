@@ -5,6 +5,7 @@ export const useRoom = defineStore('RoomPinia', {
     room: <number | null>null,
     admin: <string | null>null,
     title: <string | null>null,
+    edition: <string | null>null,
   }),
   getters: {
     isValidRoom({ room }) {
@@ -21,9 +22,12 @@ export const useRoom = defineStore('RoomPinia', {
       this.room = room
     },
     deleteRoom() {
+      const { user } = storeToRefs(useUser())
+      if (user.value) delete user.value['room']
       this.room = null
       this.admin = null
       this.title = null
+      this.edition = null
     },
   },
 })

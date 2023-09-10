@@ -1,4 +1,3 @@
-import { useBoard } from '../../../stores/board';
 <template>
   <div>
     <div class="dropdown -translate-y-2 z-10" :class="{ 'dropdown-open': companyV }">

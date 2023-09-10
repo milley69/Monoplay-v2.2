@@ -1,10 +1,17 @@
 <template>
-  <button type="button" class="btn btn-sm btn-error join-item" @click="pledgedIt" :class="{ 'btn-disabled': checkOn }">
+  <button
+    type="button"
+    class="btn btn-sm btn-error join-item"
+    @click="pledgedIt"
+    :class="{ 'btn-disabled': checkOn, 'btn-disabled pointer-events-none': !isYourDice }"
+  >
     Заложить
   </button>
 </template>
 
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
+const { isYourDice } = storeToRefs(useDice())
 const { pledgedSmth } = useGame()
 const { modal, closeModal } = useModal()
 const { uid } = useUser()
