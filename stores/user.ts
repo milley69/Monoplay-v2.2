@@ -16,6 +16,10 @@ export const useUser = defineStore('UserPinia', {
     isAuth({ authStatus, uid, user }) {
       return authStatus === 'authenticated' && uid.length > 0 && user !== null
     },
+    isUseRofls({ user }) {
+      if (user) return user.useRofls
+      return false
+    },
   },
   actions: {
     setStatus(status: authStatus) {

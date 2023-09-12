@@ -1,8 +1,8 @@
 <template>
   <Teleport to="body">
     <LazyModalAgreement
+      v-if="isModalAgree.isOpen"
       :msg="isModalAgree.msg"
-      :is-open="isModalAgree.isOpen"
       :type="isModalAgree.type"
       :is-admin="isAdmin"
       @close="removeModalAgree"
@@ -58,6 +58,8 @@
               </li>
               <li><div class="divider"></div></li>
             </div>
+            <AppHeaderCopyRoom />
+            <li><div class="divider"></div></li>
             <li
               :class="{ 'disabled pointer-events-none': !(isYourDice && !gamer.isBankrupt) }"
               @click="setModalAgree('Вы уверены, что нет другого выхода, кроме как стать банкротом?', 'bankrupt')"
@@ -65,12 +67,13 @@
               <span>Обанкротиться<i class="bx bx-ghost bx-fw"></i></span>
             </li>
             <li><div class="divider"></div></li>
-            <li @click="router.push('/main')">
-              <span>На главную <i class="bx bx-food-menu bx-fw"></i></span>
-            </li>
-            <li><div class="divider"></div></li>
+
             <li @click="setModalAgree('Вы уверены, что хотите покинуть эту комнату?', 'leave')">
               <span>Покинуть комнату<i class="bx bx-run bx-fw"></i></span>
+            </li>
+            <li><div class="divider"></div></li>
+            <li @click="router.push('/main')">
+              <span>На главную <i class="bx bx-food-menu bx-fw"></i></span>
             </li>
             <li><div class="divider"></div></li>
             <li @click="signOut">

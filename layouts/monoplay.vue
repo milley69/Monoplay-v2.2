@@ -5,7 +5,7 @@
   <main class="flex flex-col mb-20 mt-12">
     <slot />
   </main>
-  <lazy-rofls-donate-rats :money="money" v-if="user?.useRofls" />
+  <lazy-rofls-donate-rats :money="money" v-if="isUseRofls" />
   <LazyAppNavigation />
 </template>
 
@@ -14,7 +14,7 @@ import { storeToRefs } from 'pinia'
 
 const { loadRoom } = useGame()
 const { room } = storeToRefs(useRoom())
-const { user } = storeToRefs(useUser())
+const { isUseRofls } = storeToRefs(useUser())
 
 const { gamer } = storeToRefs(useGamers())
 const { isModal } = storeToRefs(useModal())

@@ -7,8 +7,8 @@
           min="0"
           pattern="\d+"
           v-model="companyCount"
-          class="input input-bordered w-24 join-item no-spinner"
-          placeholder="(. )Y( .)"
+          class="input input-bordered w-40 join-item no-spinner"
+          :placeholder="isUseRofls ? '(. )Y( .)' : 'Сумма кубиков'"
         />
         <button type="button" class="btn join-item" @click="emit('pay', Number(companyCount))">
           <i class="bx bxs-paper-plane bx-sm"></i>
@@ -23,8 +23,8 @@
           min="0"
           pattern="\d+"
           v-model="orderCount"
-          class="input input-bordered w-24 join-item no-spinner"
-          placeholder="(. )Y( .)"
+          class="input input-bordered w-40 join-item no-spinner"
+          :placeholder="isUseRofls ? '(. )Y( .)' : 'За сколько?'"
         />
         <button type="button" class="btn join-item" @click="getOrder">
           <i class="bx bxs-paper-plane bx-sm"></i>
@@ -35,8 +35,11 @@
 </template>
 
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
 const emit = defineEmits<{ pay: [cost: number] }>()
 const props = defineProps<{ companyV: boolean; orderV: boolean }>()
+
+const { isUseRofls } = storeToRefs(useUser())
 
 const { checkBalance, setConfirmation } = useGame()
 const { modal, closeModal } = useModal()

@@ -37,7 +37,7 @@
             <button
               v-for="(action, idx) in chance.earnings"
               :key="idx"
-              class="btn btn-success"
+              :class="isYourDice ? 'btn btn-success' : 'btn btn-disabled pointer-events-none'"
               @click="earningHandler(action)"
             >
               {{ action }}
@@ -50,7 +50,7 @@
               type="button"
               v-for="(action, idx) in chance.loss"
               :key="idx"
-              class="btn btn-warning"
+              :class="isYourDice ? 'btn btn-warning' : 'btn btn-disabled pointer-events-none'"
               @click="lossHandler(action)"
             >
               {{ checkLossType(action) }}
@@ -78,6 +78,7 @@ import { storeToRefs } from 'pinia'
 
 definePageMeta({ layout: 'monoplay', middleware: 'room' })
 
+const { isYourDice } = storeToRefs(useDice())
 const { chance } = storeToRefs(useBoard())
 const { uid } = storeToRefs(useUser())
 const { gamer, gamers } = storeToRefs(useGamers())

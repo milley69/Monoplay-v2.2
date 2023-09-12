@@ -85,6 +85,8 @@ export type ModalType = 'railroad' | 'company' | 'street'
 /* Confirmation */
 
 export interface PropertyConfirmation {
+  uid: string
+  name: string
   giving: string
   street: IStreets[]
   railroad: Irailroads[]

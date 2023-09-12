@@ -23,7 +23,7 @@
           <span class="text-sm text-primary">{{ errorForm.name }}</span>
         </label>
         <input
-          type="text"
+          type="email"
           v-model.trim="userForm.email"
           placeholder="Email"
           class="input input-bordered bg-base-200 text-base-content w-full max-w-xs"

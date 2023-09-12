@@ -40,7 +40,7 @@
             class="input input-bordered w-24 join-item no-spinner"
             v-model="deposit"
             @keypress.enter="depositHandler"
-            placeholder="(. )Y( .)"
+            :placeholder="isUseRofls ? '(. )Y( .)' : 'Сколько?'"
           />
           <button type="button" class="btn join-item" @click.prevent="depositHandler">
             <i class="bx bxs-paper-plane bx-sm"></i>
@@ -55,7 +55,9 @@
 
 <script lang="ts" setup>
 import type { Gamer } from '@/types'
+import { storeToRefs } from 'pinia'
 const { setToast } = useToast()
+const { isUseRofls } = storeToRefs(useUser())
 
 const props = defineProps<{ gamer: Gamer; uid: string; balance: string }>()
 

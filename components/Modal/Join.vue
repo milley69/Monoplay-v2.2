@@ -60,6 +60,7 @@ const submitHandler = async () => {
     return
   }
 
+  console.log('data: ', data)
   setToast('success', 'Успех 🌟', `Вы вошли в комнату: <${data}>!`)
   loader.value = false
   await setNewGamer(Number(form.key))

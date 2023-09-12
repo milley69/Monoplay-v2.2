@@ -16,13 +16,13 @@ export const useGame = () => {
   const { getGamerById, setGamers } = useGamers()
   const { checkSimilarStreets, getForRenovation, foldRent, setFullBoard, getConfirmationModal } = useBoard()
   const { room, title, admin, edition } = storeToRefs(useRoom())
-  const { setRoom, isValidRoom } = useRoom()
+  const { setRoom, isValidRoom, deleteRoom: deleteRoomPinia } = useRoom()
   const { setToast } = useToast()
   const { getSmthByPath, foldOtherRent, checkStreetLengthByPath } = useDatabaseFB()
 
   const getCopyGame = async (edition: string | null) => {
     if (!edition) return null
-    const data = await get(child($ref(), edition))
+    const data = await get(child($ref(), `editions/${edition}`))
     if (data.exists()) return data.val()
     return null
   }
@@ -72,7 +72,7 @@ export const useGame = () => {
   const loadRoom = async (room: number, isSearch = false) => {
     try {
       const data = (await get(child($ref(), `games/${room}/`))).val()
-      if (isSearch && data) return true
+      if (isSearch && data) return data.title
       if (data) {
         setFullBoard(data.board)
         admin.value = data.admin
@@ -86,9 +86,26 @@ export const useGame = () => {
       return false
     }
   }
+
+  const leaveFromRoom = async (isAdmin: boolean): Promise<void> => {
+    if (isAdmin) {
+      useToast().setToast('error', 'Ой... 🐱', 'Вы не можете покинуть свою комнату!', 4000)
+      return
+    }
+    try {
+      await onBankrupt(uid.value, true)
+      await remove($ref(`games/${room.value}/gamers/${uid.value}`))
+      deleteRoomPinia()
+      setToast('info', 'Новое сообщение! 🐱', 'Вы удачно вышли из комнаты')
+      setTimeout(() => window.location.reload(), 50)
+    } catch (error) {
+      console.log('error: ', error)
+      setToast('info', 'Новое сообщение! 🐸', 'Вы не удачно вышли из комнаты')
+    }
+  }
   /* old func */
 
-  const checkBalance = (cost: number) => {
+  const checkBalance = (cost: number): boolean => {
     if (gamer.value && gamer.value.money < cost) {
       setToast('error', 'Упсс 📉', `У вас недостаточно средств!`)
       return false
@@ -238,9 +255,9 @@ export const useGame = () => {
     else setToast('success', 'Успех 💰', `${name} получил <${res.name}>!`)
   }
 
-  const onBankrupt = async (uid: string) => {
+  const onBankrupt = async (uid: string, leave: boolean = false) => {
     const { getStreetsByUid, getRailroadsByUid, getCompaniesByUid } = useBoard()
-    await update($ref(`games/${room.value}/gamers/${uid}`), { money: 0, isBankrupt: true })
+    if (!leave) await update($ref(`games/${room.value}/gamers/${uid}`), { money: 0, isBankrupt: true })
     await dice.removeDice()
     const streets = getStreetsByUid(uid)
     const railroads = getRailroadsByUid(uid)
@@ -261,7 +278,7 @@ export const useGame = () => {
         await update($ref(`games/${room.value}/board/companies/${company.path}`), { owner: '', isPledged: false })
       })
     }
-    setToast('info', 'Новое сообщение 💸', 'Мы сожалеем, что вам пришлось обанкротиться!', 5500)
+    if (!leave) setToast('info', 'Новое сообщение 💸', 'Мы сожалеем, что вам пришлось обанкротиться!', 5500)
   }
 
   /* Confirmation */
@@ -341,6 +358,7 @@ export const useGame = () => {
     setNewGamer,
     loadRoom,
     deleteRoom,
+    leaveFromRoom,
     checkBalance,
     onDeposit,
     onEarning,
