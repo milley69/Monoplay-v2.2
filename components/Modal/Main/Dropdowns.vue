@@ -35,13 +35,18 @@
 </template>
 
 <script setup lang="ts">
+import { IConfirm } from '@/types'
 import { storeToRefs } from 'pinia'
 const emit = defineEmits<{ pay: [cost: number] }>()
 const props = defineProps<{ companyV: boolean; orderV: boolean }>()
 
-const { isUseRofls } = storeToRefs(useUser())
+const { isUseRofls, user } = storeToRefs(useUser())
 
-const { checkBalance, setConfirmation } = useGame()
+const { setTemp } = useConfirm()
+const { sendConfirm } = useConfirmation()
+
+const { checkBalance } = useGame()
+const { getGamerById } = useGamers()
 const { modal, closeModal } = useModal()
 const { setToast } = useToast()
 
@@ -49,25 +54,34 @@ const companyCount = ref('')
 const orderCount = ref('')
 const orderRef = ref(<HTMLInputElement | null>null)
 
-const getOrder = () => {
+const getOrder = async () => {
   if (Number(orderCount.value) < 0) {
     setToast('warning', 'Предупреждение 🤡', 'Я хотел сделать это пасхалкой, но отказался от этого', 5500)
     orderCount.value = ''
     return
   }
-  if (!checkBalance(Number(orderCount.value))) {
+  if (!checkBalance(Number(orderCount.value)) || !user.value) {
     orderCount.value = ''
     return
   }
-  let path
-  if (modal.type === 'street') {
-    path = `streets/${modal.path}`
-  } else if (modal.type === 'railroad') {
-    path = `railroads/${modal.data.path}`
-  } else {
-    path = `companies/${modal.data.path}`
+
+  const gamer = getGamerById(modal.data.owner)
+  const orderBy: IConfirm = {
+    uid: user.value.uid,
+    name: user.value.name,
+    giving: orderCount.value,
+    names: [],
+    paths: [],
   }
-  setConfirmation(modal.data.owner, Number(orderCount.value), modal.data.name, path)
+  const orderFor: IConfirm = { uid: gamer.uid, name: gamer.name, names: [], paths: [] }
+
+  const path = modal.type === 'street' ? 'streets' : modal.type === 'railroad' ? 'railroads' : 'companies'
+  orderFor.names.push(modal.data.name)
+  orderFor.paths.push(`${path}/${modal.path}`)
+
+  setTemp({ orderBy, orderFor, checked: false, id: Math.floor(Number(new Date()) * Math.random()) })
+  await sendConfirm()
+  setToast('success', 'Успех 🎉', `${gamer.name} вскоре получит уведомление с Вашим предложением!`)
   closeModal()
 }
 watch(

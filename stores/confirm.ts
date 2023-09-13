@@ -1,36 +1,35 @@
+import type { ConfirmState } from '@/types'
 import { defineStore } from 'pinia'
 
-interface IConfirm {
-  uid: string
-  name: string
-  giving?: string
-  names: string[]
-  paths: string[]
-}
-
-export interface TempState {
-  orderBy: IConfirm
-  orderFor: IConfirm
-  checked: boolean
-  id: number
-}
 export const useConfirm = defineStore('ConfirmPinia', {
   state: () => ({
-    temp: <TempState | object>{},
-    confirms: <TempState[]>[],
+    temp: <ConfirmState | object>{},
+    confirms: <ConfirmState[]>[],
   }),
-  getters: {},
+  getters: {
+    confirmsLen({ confirms }) {
+      return confirms.reduce((count, confirm) => (confirm.checked ? count : count + 1), 0)
+    },
+  },
   actions: {
-    setTemp(temp: TempState) {
+    setTemp(temp: ConfirmState) {
       this.temp = temp
     },
     removeTemp() {
       this.temp = {}
     },
-    addConfirm(data: TempState) {
-      for (const [id, value] of Object.entries(data) as [string, TempState][]) {
+    checkConfirm(id: number) {
+      const idx = this.confirms.findIndex((el) => el.id === id)
+      this.confirms[idx].checked = true
+    },
+    addConfirm(data: ConfirmState) {
+      for (const [id, value] of Object.entries(data) as [string, ConfirmState][]) {
         const checkId = this.confirms.findLast((el) => el.id === Number(id))
-        if (!checkId) this.confirms.push({ ...value })
+        if (!checkId && !value.checked) {
+          const { setToast } = useToast()
+          this.confirms.push({ ...value })
+          setToast('info', 'Уведомление ✨', '<- У вас новое предложение обмена!')
+        }
       }
     },
   },

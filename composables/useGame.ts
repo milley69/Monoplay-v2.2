@@ -1,5 +1,5 @@
 import type { LossType } from '@/types'
-import { child, get, push, remove, set, update } from 'firebase/database'
+import { child, get, remove, set, update } from 'firebase/database'
 import { storeToRefs } from 'pinia'
 
 const extractSubstring = (str: string) => {
@@ -14,7 +14,7 @@ export const useGame = () => {
   const { user, uid } = storeToRefs(useUser())
   const { gamer } = storeToRefs(useGamers())
   const { getGamerById, setGamers } = useGamers()
-  const { checkSimilarStreets, getForRenovation, foldRent, setFullBoard, getConfirmationModal } = useBoard()
+  const { checkSimilarStreets, getForRenovation, foldRent, setFullBoard } = useBoard()
   const { room, title, admin, edition } = storeToRefs(useRoom())
   const { setRoom, isValidRoom, deleteRoom: deleteRoomPinia } = useRoom()
   const { setToast } = useToast()
@@ -113,8 +113,8 @@ export const useGame = () => {
     return true
   }
 
-  const onDeposit = async (money: number, id: string, sum: number) => {
-    if (!checkBalance(sum) && !isValidRoom) return
+  const onDeposit = async (money: number, id: string, sum: number, isConfirm = true) => {
+    if (isConfirm || (!checkBalance(sum) && !isValidRoom)) return
     await update($ref(`games/${room.value}/gamers/${id}`), { money: money + sum })
     await onLoss(sum)
   }
@@ -281,42 +281,7 @@ export const useGame = () => {
     if (!leave) setToast('info', 'Новое сообщение 💸', 'Мы сожалеем, что вам пришлось обанкротиться!', 5500)
   }
 
-  /* Confirmation */
-
-  const getConfirmation = async () => {
-    try {
-      const confirmation = (await get(child($ref(), `games/${room.value}/board/confirmation`))).val()
-      if (confirmation) {
-        getConfirmationModal(confirmation)
-      }
-    } catch (error) {
-      console.log('error: ', error)
-    }
-  }
-
-  const setConfirmation = async (idFor: string, cost: number, name: string, path: string) => {
-    try {
-      await push($ref(`games/${room.value}/board/confirmation`), {
-        for: idFor,
-        by: uid.value,
-        cost,
-        name,
-        path,
-        check: false,
-      })
-    } catch (error) {
-      console.log('error: ', error)
-    }
-  }
-  const removeConfirmation = async (id: string) => {
-    try {
-      await remove($ref(`games/${room.value}/board/confirmation/${id}`))
-    } catch (error) {
-      console.log('error: ', error)
-    }
-  }
-
-  // Dice
+  /* Dice */
 
   const getDicesDB = async () => {
     try {
@@ -373,10 +338,6 @@ export const useGame = () => {
     onSale,
     onOrder,
     onBankrupt,
-    /* Confirmation */
-    getConfirmation,
-    setConfirmation,
-    removeConfirmation,
     /* Dice */
     addDiceDB,
     removeDiceDB,

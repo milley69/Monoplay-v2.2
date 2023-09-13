@@ -2,11 +2,23 @@
   <section class="hero min-h-screen">
     <div class="hero-content text-center" @click="authModal = false">
       <div class="max-w-md">
-        <img class="w-5/6 object-cover object-center rounded mx-auto" alt="hero" fetchpriority="high" src="/images/Logo.png" />
+        <img
+          class="w-5/6 object-cover object-center rounded mx-auto"
+          alt="hero"
+          fetchpriority="high"
+          src="/images/Logo.png"
+        />
         <h1 class="text-5xl font-bold">{{ greeting }}</h1>
-        <p class="py-6">Присоединяйтесь к игре в Монополию, но сначала пожалуйста авторизуйтесь, чтобы мы могли начать игру.</p>
-        <button type="button" class="btn btn-primary" @click.stop.prevent="push('/main')" v-if="isAuth">Продолжить</button>
-        <button type="button" class="btn btn-primary" @click.stop.prevent="authModal = true" v-else>Авторизоваться</button>
+        <p class="py-6">
+          Присоединяйтесь к игре в Монополию, но сначала пожалуйста авторизуйтесь, чтобы мы могли начать игру.
+        </p>
+
+        <button type="button" class="btn btn-primary" @click.stop.prevent="push('/main')" v-if="isAuth">
+          Продолжить
+        </button>
+        <button type="button" class="btn btn-primary" @click.stop.prevent="authModal = true" v-else>
+          Авторизоваться
+        </button>
       </div>
     </div>
   </section>

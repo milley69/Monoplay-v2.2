@@ -62,15 +62,6 @@ export interface Irailroads extends Property {
 export interface Icompanies extends Property {
   rent: [string, string]
 }
-export interface IConfirm {
-  by: string
-  check: boolean
-  cost: number
-  for: string
-  name: any
-  path: string
-  id: string
-}
 
 /* Modals types */
 
@@ -91,4 +82,19 @@ export interface PropertyConfirmation {
   street: IStreets[]
   railroad: Irailroads[]
   company: Icompanies[]
+}
+
+export interface ConfirmState {
+  orderBy: IConfirm
+  orderFor: IConfirm
+  checked: boolean
+  id: number
+}
+
+export interface IConfirm {
+  uid: string
+  name: string
+  giving?: string
+  names: string[]
+  paths: string[]
 }

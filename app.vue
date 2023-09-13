@@ -5,8 +5,8 @@
 </template>
 
 <script setup lang="ts">
+import { User } from '@/types'
 import { storeToRefs } from 'pinia'
-import { User } from './types'
 
 const { initUser } = useAuthFB()
 const { setUser } = useUser()
@@ -45,21 +45,21 @@ const onLog = () => {
 }
 
 onMounted(async () => {
-  //
-  // if ('serviceWorker' in navigator) {
-  //   try {
-  //     const reg = await navigator.serviceWorker.register('./service-worker.js')
-  //     console.log('Service worker register success', reg)
-  //   } catch (e) {
-  //     console.log('Service worker register fail')
-  //   }
-  // }
-  //
-  // onLog()
+  /*   
+  if ('serviceWorker' in navigator) {
+    try {
+      const reg = await navigator.serviceWorker.register('./service-worker.js')
+      console.log('Service worker register success', reg)
+    } catch (e) {
+      console.log('Service worker register fail')
+    }
+  }
+   */
+  onLog()
   const lsUser = localStorage.getItem('monoplay_user')
   const user: User | null = lsUser ? JSON.parse(lsUser) : null
   if (user) setUser(user)
-  else await initUser()
+  await initUser()
 })
 
 watch(

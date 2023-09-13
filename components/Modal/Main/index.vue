@@ -46,6 +46,7 @@ const { modal, closeModal } = useModal()
 const { setToast } = useToast()
 const { gamer, gamers } = storeToRefs(useGamers())
 const { uid } = storeToRefs(useUser())
+const { removeTemp } = useConfirm()
 
 const onPurchase = ref(false)
 
@@ -54,6 +55,10 @@ const getOwner = (user: string) => (user === uid.value ? gamer.value?.name : gam
 const orderDropdown = ref(false)
 const companyDropdown = ref(false)
 const tooltipOpen = (isOpen: boolean) => isOpen
+
+onUnmounted(() => {
+  removeTemp()
+})
 
 const dropdownOpen = (isOrder = false) => {
   if (isOrder) {

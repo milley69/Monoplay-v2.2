@@ -7,7 +7,7 @@ export const useListener = () => {
     useDatabaseFB()
   const { setGamers } = useGamers()
   const { setToast } = useToast()
-  const { getDicesDB, getConfirmation } = useGame()
+  const { getDicesDB } = useGame()
   const dice = useDice()
 
   /* GAMERS */
@@ -40,13 +40,13 @@ export const useListener = () => {
 
   /* BOARD */
   onChildChanged($ref(`games/${room.value}/board`), async (snap) => {
-    if (snap.key === 'confirmation') await getConfirmation()
     if (snap.key === 'streets') await getStreetFromDatabase()
     if (snap.key === 'railroads') await getRailroadsFromDatabase()
     if (snap.key === 'companies') await getCompanyFromDatabase()
     // await getDicesDB()
   })
 
+  /* ROOM */
   onChildRemoved($ref(`games/${room.value}`), ({ key }) => {
     if (key === 'id') {
       const { deleteRoom } = useRoom()

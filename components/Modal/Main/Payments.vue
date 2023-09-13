@@ -6,7 +6,7 @@
         class="btn btn-sm join-item btn-info"
         :class="{ 'btn-disabled pointer-events-none': !isYourDice }"
         v-if="modal.type !== 'company'"
-        @click="emit('pay')"
+        @click="$emit('pay')"
       >
         Оплатить
       </button>
@@ -15,7 +15,7 @@
         class="btn btn-sm join-item btn-info"
         :class="{ 'btn-disabled pointer-events-none': !isYourDice }"
         v-else
-        @click="emit('dropdown')"
+        @click="$emit('dropdown')"
       >
         Оплатить
       </button>
@@ -24,7 +24,7 @@
       type="button"
       class="btn btn-sm join-item btn-warning"
       :class="{ 'btn-disabled pointer-events-none': !isYourDice }"
-      @click="emit('dropdown', true)"
+      @click="$emit('dropdown', true)"
     >
       Выкупить
     </button>
@@ -35,7 +35,7 @@
 import { storeToRefs } from 'pinia'
 const { isYourDice } = storeToRefs(useDice())
 
-const emit = defineEmits<{ dropdown: [isOrder?: boolean]; pay: any }>()
+defineEmits<{ dropdown: [isOrder?: boolean]; pay: any }>()
 defineProps<{ rent: number | string }>()
 
 const { modal } = storeToRefs(useModal())

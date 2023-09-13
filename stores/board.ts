@@ -1,4 +1,4 @@
-import type { IConfirm, IRent, IStreets, Icompanies, Irailroads, LossType } from '@/types'
+import type { IRent, IStreets, Icompanies, Irailroads, LossType } from '@/types'
 import { defineStore } from 'pinia'
 
 type Street = Record<string, IStreets[]>
@@ -8,20 +8,13 @@ export const useBoard = defineStore('BoardPinia', {
     streets: <Street>{},
     railroads: <Irailroads[]>[],
     companies: <Icompanies[]>[],
-    confirmation: <IConfirm[]>[],
   }),
-  getters: {
-    // lenConfirm({ confirmation }) {
-    //   return confirmation.filter((cur) => !cur.check).length
-    // },
-  },
   actions: {
     setFullBoard(data: any) {
       this.chance = data.chance
       this.companies = data.companies
       this.railroads = data.railroads
       this.streets = data.streets
-      this.confirmation = data.confirmation
     },
     setStreets(data: Street) {
       this.streets = data
@@ -87,28 +80,6 @@ export const useBoard = defineStore('BoardPinia', {
         return { isSimilar, pathKey }
       }
       return { isSimilar: false, pathKey }
-    },
-    //
-    getConfirmationModal(data: IConfirm[]) {
-      const { uid } = useUser()
-
-      for (const [id, value] of Object.entries(data)) {
-        const checkId = this.confirmation.find((i) => i.id === id)
-        if (value.for === uid && !checkId) this.confirmation.push({ ...value, id })
-      }
-    },
-    async deleteConfirmationModal(id: string, all: boolean = false) {
-      const { removeConfirmation } = useGame()
-      if (all) {
-        this.confirmation = []
-      } else {
-        this.confirmation.forEach((con) => {
-          if (con.id === id) {
-            con.check = true
-          }
-        })
-        await removeConfirmation(id)
-      }
     },
   },
 })

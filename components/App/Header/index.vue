@@ -1,12 +1,6 @@
 <template>
   <Teleport to="body">
-    <LazyModalAgreement
-      v-if="isModalAgree.isOpen"
-      :msg="isModalAgree.msg"
-      :type="isModalAgree.type"
-      :is-admin="isAdmin"
-      @close="removeModalAgree"
-    />
+    <LazyModalAgreement v-if="isModalAgree.isOpen" :msg="isModalAgree.msg" :type="isModalAgree.type" :is-admin="isAdmin" @close="removeModalAgree" />
   </Teleport>
   <div class="drawer">
     <input id="my-drawer" type="checkbox" class="drawer-toggle" />
@@ -23,21 +17,17 @@
           <p class="btn btn-ghost normal-case text-sm">{{ whatIsPage }}</p>
         </div>
         <div class="navbar-end" :class="{ invisible: isMain }">
-          <p class="flex items-center gap-1">
-            <i class="bx bx-won bx-flip-vertical"></i>{{ getCurrencyBalance(gamer?.money) }}
-          </p>
+          <p class="flex items-center gap-1"><i class="bx bx-won bx-flip-vertical"></i>{{ getCurrencyBalance(gamer?.money) }}</p>
           <LazyDice :uidprop="gamer.uid" is-navbar v-if="gamer.uid" />
         </div>
       </div>
     </div>
     <div class="drawer-side z-20">
       <label for="my-drawer" class="drawer-overlay"></label>
-      <ul
-        class="lg:w-56 h-full w-7/12 pt-20 bg-base-100 text-base-content flex justify-between items-center flex-col flex-wrap p-2"
-      >
+      <ul class="lg:w-56 h-full w-7/12 pt-20 bg-base-100 text-base-content flex justify-between items-center flex-col flex-wrap p-2">
         <li class="mx-auto font-medium">
           <div class="indicator" v-if="!isMain">
-            <span class="indicator-item badge badge-primary">{{ '0' }}</span>
+            <span class="indicator-item badge badge-primary">{{ confirmsLen }}</span>
             <button class="btn btn-ghost px-2" @click="toConfirmation">
               {{ user?.name }}
             </button>
@@ -60,10 +50,7 @@
             </div>
             <AppHeaderCopyRoom />
             <li><div class="divider"></div></li>
-            <li
-              :class="{ 'disabled pointer-events-none': !(isYourDice && !gamer.isBankrupt) }"
-              @click="setModalAgree('Вы уверены, что нет другого выхода, кроме как стать банкротом?', 'bankrupt')"
-            >
+            <li :class="{ 'disabled pointer-events-none': !(isYourDice && !gamer.isBankrupt) }" @click="setModalAgree('Вы уверены, что нет другого выхода, кроме как стать банкротом?', 'bankrupt')">
               <span>Обанкротиться<i class="bx bx-ghost bx-fw"></i></span>
             </li>
             <li><div class="divider"></div></li>
@@ -100,6 +87,7 @@ const route = useRoute()
 const { signOut } = useAuthFB()
 
 const { gamer } = storeToRefs(useGamers())
+const { confirmsLen } = storeToRefs(useConfirm())
 const { user } = storeToRefs(useUser())
 const { isAdmin, title } = storeToRefs(useRoom())
 const { isYourDice } = storeToRefs(useDice())
